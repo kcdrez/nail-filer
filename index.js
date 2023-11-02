@@ -1,5 +1,10 @@
 import React from "react";
-import reactDom from "react-dom";
 import App from "./src/App";
 
-reactDom.render(<App />, document.getElementById("root"));
+import "bootstrap/dist/css/bootstrap.css";
+import styles from "./src/styles.css";
+
+import { createRoot } from "react-dom/client";
+const container = document.getElementById("root");
+const root = createRoot(container); // createRoot(container!) if you use TypeScript
+root.render(<App />);

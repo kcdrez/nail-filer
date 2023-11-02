@@ -1,35 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { ChromePicker } from "react-color";
 
-// import styles from "./styles.css";
+import Color from "./components/Color";
 
 const App = () => {
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState({});
   const [colorList, setColorList] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
 
   function addColor() {
     setErrorMsg("");
-    const exists = colorList.find((c) => c === color);
+    const exists = colorList.find((c) => c.hex === color.hex);
     if (!exists) {
       setColorList([...colorList, color]);
     } else {
-      setErrorMsg(`You've already added ${color}`);
+      setErrorMsg("You've already added that color");
     }
   }
 
   function removeColor(color) {
     setColorList(colorList.filter((c) => c !== color));
-  }
-
-  function validateColor(e) {
-    const regex = /[0-9A-Fa-f]+/g;
-    console.log(color, e.key);
-
-    if (color.length === 6) {
-      e.preventDefault();
-    } else if (!regex.test(e.key)) {
-      e.preventDefault();
-    }
   }
 
   useEffect(() => {
@@ -42,41 +32,41 @@ const App = () => {
   }, [colorList]);
 
   return (
-    <>
-      <h1>Welcome to the Nail Filer!</h1>
-      <p>Organize and filter your nail polish colors</p>
-      <div>
-        <input
-          type="text"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          onKeyPress={(e) => validateColor(e)}
-        />
-        <button onClick={() => addColor()}>Add</button>
-        {!!errorMsg && <div>{errorMsg}</div>}
+    <div className="container">
+      <div className="row">
+        <div className="col">
+          <h1>Welcome to the Nail Filer!</h1>
+          <p>Organize and filter your nail polish colors</p>
+        </div>
       </div>
-      <ul>
-        {colorList.map((color, index) => {
-          return (
-            <div key={index}>
-              <li>
-                <span>
-                  <div
-                    style={{
-                      backgroundColor: `#${color}`,
-                      height: "16px",
-                      width: "16px",
-                    }}
-                  ></div>
-                  {color}
-                </span>
-                <button onClick={() => removeColor(color)}>Remove</button>
-              </li>
-            </div>
-          );
-        })}
-      </ul>
-    </>
+      <div className="row">
+        <div className="col-4">
+          <ChromePicker
+            color={color}
+            onChangeComplete={(color) => setColor(color)}
+          />
+          <button
+            className="btn btn-primary"
+            onClick={() => addColor()}
+            disabled={!color.hex}
+          >
+            Add Color
+          </button>
+          {!!errorMsg && <div className="text-danger">{errorMsg}</div>}
+          <ul className="mt-3">
+            {colorList.map((color, index) => {
+              return (
+                <div key={index}>
+                  <li>
+                    <Color color={color} handleRemove={removeColor} />
+                  </li>
+                </div>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 };
 

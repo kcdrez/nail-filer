@@ -1,4 +1,9 @@
 .square {
   height: 16px;
   width: 16px;
+  border: 1px solid #000;
+}
+
+.d-flex {
+  display: flex;
 }
