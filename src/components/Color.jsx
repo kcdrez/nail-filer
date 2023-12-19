@@ -12,7 +12,7 @@ const Color = ({ color, handleRemove }) => {
         ></div>
       </span>
       <span className="input-group-text">{color.hex}</span>
-      <button className="btn btn-danger" onClick={() => handleRemove(hexCode)}>
+      <button className="btn btn-danger" onClick={() => handleRemove(color)}>
         Remove
       </button>
     </div>
