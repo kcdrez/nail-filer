@@ -15,35 +15,11 @@ const HomePage = () => {
 
   const isMountedRef = useIsMountedRef();
 
-  const initialState = {
-    loading: false,
-    error: false,
-    data: [],
-  };
-
-  const [state, setState] = useState(initialState);
-
   useEffect(() => {
-    fetch("https://www.reddit.com/.json")
-      .then((response) => response.json())
-      .then(({ data }) => {
-        if (isMountedRef.current) {
-          setState((prevState) => {
-            return {
-              ...prevState,
-              loading: false,
-              data,
-            };
-          });
-        }
-      })
-      .catch((err) => {
-        if (isMountedRef.current) {
-          setState((prevState) => {
-            return { ...prevState, loading: false, error: true };
-          });
-        }
-      });
+    if (isMountedRef.current) {
+      const colors = JSON.parse(window.localStorage.getItem("colors") ?? "[]");
+      setColorList(colors);
+    }
   }, []);
 
   function addColor() {
@@ -71,9 +47,7 @@ const HomePage = () => {
     window.localStorage.setItem("colors", JSON.stringify(colorList));
   }, [colorList]);
 
-  return state.loading ? (
-    <div>Loading</div>
-  ) : (
+  return (
     <div className="container">
       <div className="row">
         <div className="col">
