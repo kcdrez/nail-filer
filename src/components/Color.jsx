@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 
-const Color = ({ color, handleRemove }) => {
+import { ColorContext } from "../context/colorContext";
+
+const Color = ({ color, canRemove = false }) => {
+  const { removeColor } = useContext(ColorContext);
+
   return (
     <div className="input-group input-group-sm">
       <span className="input-group-text">
@@ -12,9 +16,11 @@ const Color = ({ color, handleRemove }) => {
         ></div>
       </span>
       <span className="input-group-text">{color.hex}</span>
-      <button className="btn btn-danger" onClick={() => handleRemove(color)}>
-        Remove
-      </button>
+      {canRemove && (
+        <button className="btn btn-danger" onClick={() => removeColor(color)}>
+          Remove
+        </button>
+      )}
     </div>
   );
 };

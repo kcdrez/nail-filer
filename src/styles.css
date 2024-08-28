@@ -7,3 +7,10 @@
 .d-flex {
   display: flex;
 }
+
+.img-color-picker {
+  max-width: 500px;
+}
+.img-color-picker canvas {
+  border-radius: 5px;
+}

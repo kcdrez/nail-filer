@@ -1,47 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
-import { ChromePicker } from "react-color";
-import { ImageColorPicker } from "react-image-color-picker";
-import useIsMountedRef from "use-is-mounted-ref";
+import { toast } from "react-toastify";
 
-// import useIsMounted from "../hooks/useIsMounted";
+import ColorList from "../components/ColorList";
+import ImageSelector from "../components/imageSelector";
+import ColorPicker from "../components/colorPicker";
 
-import image from "../images/rainbow.png";
-import Color from "../components/Color";
+import { ColorContext } from "../context/colorContext";
 
 const HomePage = () => {
-  const [color, setColor] = useState({});
+  const [color, setColor] = useState({ hex: "#FFFFFF" });
   const [colorList, setColorList] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const isMountedRef = useIsMountedRef();
+  const colorContextValue = {
+    color,
+    setColor,
+    colorList,
+    setColorList,
+    addColor,
+    removeColor,
+  };
 
   useEffect(() => {
-    if (isMountedRef.current) {
-      const colors = JSON.parse(window.localStorage.getItem("colors") ?? "[]");
-      setColorList(colors);
-    }
+    const colors = JSON.parse(window.localStorage.getItem("colors") ?? "[]");
+    setColorList(colors);
   }, []);
 
   function addColor() {
-    setErrorMsg("");
     const exists = colorList.find((c) => c.hex === color.hex);
     if (!exists) {
       setColorList([...colorList, color]);
+      toast("Successfully added " + color.hex);
     } else {
-      setErrorMsg("You've already added that color");
+      toast("You've already added " + color.hex);
     }
   }
 
   function removeColor(color) {
     setColorList(colorList.filter((c) => c !== color));
+    toast("Removed " + color.hex);
   }
-
-  const handleColorPick = (rgbString) => {
-    const hex = rgbString
-      .match(/[0-9]+/g)
-      .reduce((a, b) => a + (b | 256).toString(16).slice(1), "#");
-    setColor({ hex });
-  };
 
   useEffect(() => {
     window.localStorage.setItem("colors", JSON.stringify(colorList));
@@ -49,46 +46,85 @@ const HomePage = () => {
 
   return (
     <div className="container">
-      <div className="row">
-        <div className="col">
-          <h1>Welcome to the Nail Filer!</h1>
-          <p>Organize and filter your nail polish colors</p>
+      <ColorContext.Provider value={colorContextValue}>
+        <div className="row">
+          <div className="col">
+            <h1>Welcome to the Nail Filer!</h1>
+            <p>Organize and filter your nail polish colors</p>
+          </div>
         </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
-          <ChromePicker
-            color={color}
-            onChangeComplete={(color) => setColor(color)}
-          />
-          <button
-            className="btn btn-primary"
-            onClick={() => addColor()}
-            disabled={!color.hex}
-          >
-            Add Color
-          </button>
-          {!!errorMsg && <div className="text-danger">{errorMsg}</div>}
-          <ul className="mt-3">
-            {colorList.map((color, index) => {
-              return (
-                <div key={index}>
-                  <li>
-                    <Color color={color} handleRemove={removeColor} />
-                  </li>
-                </div>
-              );
-            })}
-          </ul>
+        <div className="row">
+          <div className="col-12">
+            <nav>
+              <div className="nav nav-tabs" id="nav-tab" role="tablist">
+                <button
+                  className="nav-link active"
+                  id="view-colors-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#view-colors"
+                  type="button"
+                  role="tab"
+                  aria-controls="view-colors"
+                  aria-selected="true"
+                >
+                  View all Colors
+                </button>
+                <button
+                  className="nav-link"
+                  id="photo-selector-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#photo-selector"
+                  type="button"
+                  role="tab"
+                  aria-controls="photo-selector"
+                  aria-selected="false"
+                >
+                  Find from Photo
+                </button>
+                <button
+                  className="nav-link"
+                  id="select-color-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#select-color"
+                  type="button"
+                  role="tab"
+                  aria-controls="select-color"
+                  aria-selected="false"
+                >
+                  Color Selector
+                </button>
+              </div>
+            </nav>
+            <div className="tab-content" id="nav-tabContent">
+              <div
+                className="tab-pane fade show active"
+                id="view-colors"
+                role="tabpanel"
+                aria-labelledby="view-colors-tab"
+              >
+                <ColorList />
+              </div>
+              <div
+                className="tab-pane fade"
+                id="photo-selector"
+                role="tabpanel"
+                aria-labelledby="photo-selector-tab"
+              >
+                <ImageSelector />
+              </div>
+              <div
+                className="tab-pane fade"
+                id="select-color"
+                role="tabpanel"
+                aria-labelledby="select-color-tab"
+              >
+                <ColorPicker />
+              </div>
+            </div>
+          </div>
+          <div className="col"></div>
         </div>
-      </div>
-      <div className="row">
-        <ImageColorPicker
-          onColorPick={handleColorPick}
-          imgSrc={image}
-          zoom={1}
-        />
-      </div>
+      </ColorContext.Provider>
     </div>
   );
 };
