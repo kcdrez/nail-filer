@@ -7,4 +7,6 @@ export const ColorContext = createContext({
   setColorList: () => {},
   addColor: () => {},
   removeColor: () => {},
+  viewMode: "",
+  setViewMode: () => {},
 });

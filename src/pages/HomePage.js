@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import ColorList from "../components/ColorList";
 import ImageSelector from "../components/imageSelector";
 import ColorPicker from "../components/colorPicker";
+import ViewMode from "../components/viewMode";
+import ColorIcon from "../components/ColorIcon";
 
 import { ColorContext } from "../context/colorContext";
 
 const HomePage = () => {
   const [color, setColor] = useState({ hex: "#FFFFFF" });
   const [colorList, setColorList] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [viewMode, setViewMode] = useState("tile");
+
   const colorContextValue = {
     color,
     setColor,
@@ -18,6 +21,8 @@ const HomePage = () => {
     setColorList,
     addColor,
     removeColor,
+    viewMode,
+    setViewMode,
   };
 
   useEffect(() => {
@@ -28,16 +33,41 @@ const HomePage = () => {
   function addColor() {
     const exists = colorList.find((c) => c.hex === color.hex);
     if (!exists) {
-      setColorList([...colorList, color]);
-      toast("Successfully added " + color.hex);
+      setColorList([...colorList, color], () => {
+        console.log(colorList);
+      });
+      toast.success(
+        <div className="d-flex align-items-center">
+          Successfully added <ColorIcon color={color} className="ms-2" />
+        </div>,
+        { autoClose: 50000 }
+      );
     } else {
-      toast("You've already added " + color.hex);
+      toast.warning(
+        <div className="d-flex align-items-center">
+          You've already added <ColorIcon color={color} className="ms-2" />
+        </div>,
+        { autoClose: 50000 }
+      );
     }
   }
 
   function removeColor(color) {
     setColorList(colorList.filter((c) => c !== color));
-    toast("Removed " + color.hex);
+    toast.success(
+      <div className="d-flex align-items-center">
+        Successfully removed <ColorIcon color={color} className="ms-2" />
+        <button
+          className="btn btn-sm btn-outline"
+          onClick={() => {
+            addColor(color);
+          }}
+        >
+          <i className="fas fa-undo"></i>
+        </button>
+      </div>,
+      { autoClose: 50000 }
+    );
   }
 
   useEffect(() => {
@@ -51,6 +81,11 @@ const HomePage = () => {
           <div className="col">
             <h1>Welcome to the Nail Filer!</h1>
             <p>Organize and filter your nail polish colors</p>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <ViewMode />
           </div>
         </div>
         <div className="row">

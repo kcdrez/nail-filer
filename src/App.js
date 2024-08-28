@@ -7,11 +7,10 @@ import HomePage from "./pages/HomePage";
 const App = () => {
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer theme="colored" />
       <HomePage />
     </div>
   );
-  // return <TestPage />;
 };
 
 export default App;
